@@ -13,10 +13,13 @@ inputs:
     required: true
     type: string
   module-directory:
-    description: What folder to analyze.
+    description: What module to test.
     required: true
     type: string
-
+  extra-arguments:
+    description: Additonal args to pass to pytest.
+    required: false
+    type: string
 runs:
   using: "composite"
   steps:
@@ -28,7 +31,11 @@ runs:
         test: true
 
     - name: Test Module
-      run: pytest ${{ inputs.module-directory }} --cov=${{ inputs.module-directory }} --cov-report xml --junitxml=xunit-result.xml
+      run: >
+        pytest ${{ inputs.module-directory }} \
+        --cov=${{ inputs.module-directory }} \
+        --cov-report xml --junitxml=xunit-result.xml \
+        ${{ inputs.extra-arguments }}
       working-directory: ${{ inputs.source-directory }}
       shell: bash
 

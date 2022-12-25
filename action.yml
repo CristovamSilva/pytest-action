@@ -20,6 +20,7 @@ inputs:
     description: Additonal args to pass to pytest.
     required: false
     type: string
+
 runs:
   using: "composite"
   steps:
@@ -34,7 +35,8 @@ runs:
       run: >
         pytest ${{ inputs.module-directory }}
         --cov=${{ inputs.module-directory }}
-        --cov-report xml --junitxml=xunit-result.xml
+        --cov-report xml 
+        --junitxml=xunit-result.xml
         ${{ inputs.extra-arguments }}
       working-directory: ${{ inputs.source-directory }}
       shell: bash

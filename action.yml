@@ -30,6 +30,7 @@ runs:
     - name: Test Module
       run: pytest ${{ inputs.module-directory }} --cov=${{ inputs.module-directory }} --cov-report xml --junitxml=xunit-result.xml
       working-directory: ${{ inputs.source-directory }}
+      shell: bash
 
     - name: Upload pytest execution results
       uses: actions/upload-artifact@v3

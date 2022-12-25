@@ -20,6 +20,11 @@ inputs:
     description: Additonal args to pass to pytest.
     required: false
     type: string
+  ignore-errors:
+    description: Whether to continue on error
+    required: false
+    default: false
+    type: boolean
 
 runs:
   using: "composite"
@@ -32,6 +37,7 @@ runs:
         test: true
 
     - name: Test Module
+      continue-on-error: ${{ inputs.ignore-errors }}
       run: >
         pytest ${{ inputs.module-directory }}
         --cov=${{ inputs.module-directory }}

@@ -8,18 +8,22 @@ inputs:
     required: false
     default: "."
     type: string
+
   source-directory:
     description: What folder to search for requirements.
     required: true
     type: string
+
   module-directory:
     description: What module to test.
     required: true
     type: string
+
   extra-arguments:
     description: Additonal args to pass to pytest.
     required: false
     type: string
+
   ignore-errors:
     description: Whether to continue on error.
     required: false

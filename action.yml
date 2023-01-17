@@ -9,7 +9,7 @@ inputs:
     default: "."
     type: string
 
-  tests-directory:
+  source-directory:
     description: What folder to search for requirements.
     required: true
     type: string
@@ -30,19 +30,22 @@ inputs:
     default: false
     type: boolean
 
-outputs:
   execution-report:
-    description: Execution report file name.
-    value: pytest-exec-results/xunit-result.xml
+    description: Path to save execution report.
+    required: false
+    default: xunit-result.xml
+    type: string
   coverage-report:
-    description: Coverage report file name.
-    value: pytest-cov-results/coverage.xml
+    description: Path to save coverage report.
+    required: false
+    default: coverage.xml
+    type: string
 
 runs:
   using: "composite"
   steps:
     - name: Load Cache & Dependencies
-      uses: cristovamsilva/python-dependencies-action@master
+      uses: CristovamSilva/python-dependencies-action@master
       with:
         dependencies-directory: ${{ inputs.dependencies-directory }}
         application: true
@@ -53,20 +56,20 @@ runs:
       run: >
         pytest ${{ inputs.module-directory }}
         --cov=${{ inputs.module-directory }}
-        --cov-report xml 
-        --junitxml=xunit-result.xml
+        --cov-report xml:${{ inputs.coverage-report }} 
+        --junitxml=${{ inputs.execution-report }} 
         ${{ inputs.extra-arguments }}
-      working-directory: ${{ inputs.tests-directory }}
+      working-directory: ${{ inputs.source-directory }}
       shell: bash
 
     - name: Upload pytest execution results
       uses: actions/upload-artifact@v3
       with:
         name: pytest-exec-results
-        path: ${{ inputs.tests-directory }}/xunit-result.xml
+        path: ${{ inputs.source-directory }}/${{ inputs.execution-report }}
 
     - name: Upload pytest coverage results
       uses: actions/upload-artifact@v3
       with:
         name: pytest-cov-results
-        path: ${{ inputs.tests-directory }}/coverage.xml
+        path: ${{ inputs.source-directory }}/${{ inputs.coverage-report }}

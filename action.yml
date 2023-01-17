@@ -9,7 +9,7 @@ inputs:
     default: "."
     type: string
 
-  source-directory:
+  tests-directory:
     description: What folder to search for requirements.
     required: true
     type: string
@@ -59,17 +59,17 @@ runs:
         --cov-report xml:${{ inputs.coverage-report }} 
         --junitxml=${{ inputs.execution-report }} 
         ${{ inputs.extra-arguments }}
-      working-directory: ${{ inputs.source-directory }}
+      working-directory: ${{ inputs.tests-directory }}
       shell: bash
 
     - name: Upload pytest execution results
       uses: actions/upload-artifact@v3
       with:
         name: pytest-exec-results
-        path: ${{ inputs.source-directory }}/${{ inputs.execution-report }}
+        path: ${{ inputs.tests-directory }}/${{ inputs.execution-report }}
 
     - name: Upload pytest coverage results
       uses: actions/upload-artifact@v3
       with:
         name: pytest-cov-results
-        path: ${{ inputs.source-directory }}/${{ inputs.coverage-report }}
+        path: ${{ inputs.tests-directory }}/${{ inputs.coverage-report }}

@@ -33,12 +33,12 @@ inputs:
   execution-report:
     description: Path to save execution report.
     required: false
-    default: xunit-result.xml
+    default: xunit-result
     type: string
   coverage-report:
     description: Path to save coverage report.
     required: false
-    default: coverage.xml
+    default: coverage
     type: string
 
 runs:
@@ -66,10 +66,10 @@ runs:
       uses: actions/upload-artifact@v3
       with:
         name: pytest-exec-results
-        path: ${{ inputs.tests-directory }}/${{ inputs.execution-report }}
+        path: ${{ inputs.tests-directory }}/${{ inputs.execution-report }}.xml
 
     - name: Upload pytest coverage results
       uses: actions/upload-artifact@v3
       with:
         name: pytest-cov-results
-        path: ${{ inputs.tests-directory }}/${{ inputs.coverage-report }}
+        path: ${{ inputs.tests-directory }}/${{ inputs.coverage-report }}.xml

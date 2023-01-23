@@ -7,15 +7,25 @@ inputs:
     description: Where to search for requirements files.
     required: false
     default: "."
+    type: directory
+    validation:
+      rule: directoryExists
+
+  deploy-keys:
+    description: Packages deploy keys.
+    required: false
+    default: ""
     type: string
 
   tests-directory:
-    description: What folder to search for requirements.
+    description: Directory containing test suites.
     required: true
-    type: string
+    type: directory
+    validation:
+      rule: directoryExists
 
-  module-directory:
-    description: What module to test.
+  package-directory:
+    description: What package to test.
     required: true
     type: string
 
@@ -33,12 +43,20 @@ inputs:
   execution-report:
     description: Path to save execution report.
     required: false
-    default: xunit-result
+    default: xunit-result.xml
     type: string
+  coverage-report-type:
+    description: Path to save coverage report.
+    required: false
+    default: "xml"
+    type: string
+    validation:
+      rule: enum
+      enum: ["xml", "html", "lcov", "annotate"]
   coverage-report:
     description: Path to save coverage report.
     required: false
-    default: coverage
+    default: coverage.xml
     type: string
 
 runs:
@@ -48,28 +66,29 @@ runs:
       uses: CristovamSilva/python-dependencies-action@master
       with:
         dependencies-directory: ${{ inputs.dependencies-directory }}
+        deploy-keys: ${{ inputs.deploy-keys }}
         application: true
         test: true
 
-    - name: Test Module
-      continue-on-error: ${{ inputs.ignore-errors == 'true' }}
-      run: >
-        pytest ${{ inputs.module-directory }}
-        --cov=${{ inputs.module-directory }}
-        --cov-report xml:${{ inputs.coverage-report }} 
-        --junitxml=${{ inputs.execution-report }} 
-        ${{ inputs.extra-arguments }}
+    - name: Test Package
       working-directory: ${{ inputs.tests-directory }}
       shell: bash
+      continue-on-error: ${{ inputs.ignore-errors == 'true' }}
+      run: >
+        pytest ${{ inputs.package-directory }}
+        --cov=${{ inputs.package-directory }}
+        --cov-report ${{ inputs.coverage-report-type }}:${{ inputs.coverage-report }}
+        --junitxml=${{ inputs.execution-report }}
+        ${{ inputs.extra-arguments }}
 
     - name: Upload pytest execution results
       uses: actions/upload-artifact@v3
       with:
         name: pytest-exec-results
-        path: ${{ inputs.tests-directory }}/${{ inputs.execution-report }}.xml
+        path: ${{ inputs.tests-directory }}/${{ inputs.execution-report }}
 
     - name: Upload pytest coverage results
       uses: actions/upload-artifact@v3
       with:
         name: pytest-cov-results
-        path: ${{ inputs.tests-directory }}/${{ inputs.coverage-report }}.xml
+        path: ${{ inputs.tests-directory }}/${{ inputs.coverage-report }}
